@@ -1,6 +1,7 @@
 package com.pr.parser.service;
 
 import com.pr.parser.model.Product;
+import com.pr.parser.rest.ScrappingProperties;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,6 +18,8 @@ import java.util.List;
 public class ScrappingService {
 
     private final WebClientService webClientService;
+
+    private final ScrappingProperties scrappingProperties;
 
     public String scrapPage() {
         Mono<String> result = webClientService.fetchHtmlContent("/catalog/electronics/telephones/mobile/?page_=page_3");
@@ -37,6 +40,8 @@ public class ScrappingService {
         for (Element productElement : productElements) {
             var productName = productElement.select("meta[itemprop=name]").attr("content");
             var productPrice = productElement.select(".card-price_curr").text();
+            var productLink = scrappingProperties.getBaseUrl() + productElement.select("a[itemprop=url]").attr("href");
+
 
             var product = new Product();
             product.setName(productName);
