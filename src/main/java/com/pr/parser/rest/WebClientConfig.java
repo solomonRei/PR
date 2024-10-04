@@ -7,7 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    private static final String BASE_URL = "";
+    private static final String BASE_URL = "https://www.pandashop.md/ru";
 
     @Bean
     public WebClient webClient() {
