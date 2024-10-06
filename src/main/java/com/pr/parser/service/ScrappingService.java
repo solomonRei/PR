@@ -3,7 +3,6 @@ package com.pr.parser.service;
 import com.pr.parser.enums.Currency;
 import com.pr.parser.model.FilteredProductsResult;
 import com.pr.parser.model.Product;
-import com.pr.parser.rest.ScrappingProperties;
 import com.pr.parser.specs.ProductSpecificationFactory;
 import com.pr.parser.utils.PriceConverterUtils;
 import com.pr.parser.validation.ProductValidator;
@@ -27,8 +26,6 @@ public class ScrappingService {
 
     private final WebClientService webClientService;
 
-    private final ScrappingProperties scrappingProperties;
-
     private final ProductValidator productValidator;
 
     private final ProductSpecificationFactory productSpecificationFactory;
@@ -41,7 +38,7 @@ public class ScrappingService {
                 .flatMap(productElement -> {
                     var productName = productElement.select("meta[itemprop=name]").attr("content");
                     var productPrice = productElement.select(".card-price_curr").text();
-                    var productLink = scrappingProperties.getBaseUrl() + productElement.select("a[itemprop=url]").attr("href");
+                    var productLink = productElement.select("a[itemprop=url]").attr("href");
 
                     var product = Product.builder()
                             .name(productName)
@@ -61,7 +58,9 @@ public class ScrappingService {
     }
 
     public Mono<Map<String, String>> scrapeAdditionalData(String productLink) {
+        System.out.println("Scraping additional data for product: " + productLink);
         return webClientService.fetchHtmlContent(productLink)
+                .doOnNext(html -> System.out.println("Product HTML: " + html))
                 .map(html -> parseCharacteristics(Jsoup.parse(html)));
     }
 
