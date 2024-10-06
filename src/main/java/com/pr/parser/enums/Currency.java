@@ -1,4 +1,4 @@
-package com.pr.parser;
+package com.pr.parser.enums;
 
 import lombok.Getter;
 

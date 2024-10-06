@@ -1,6 +1,6 @@
 package com.pr.parser.utils;
 
-import com.pr.parser.Currency;
+import com.pr.parser.enums.Currency;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
