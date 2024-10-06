@@ -2,6 +2,7 @@ package com.pr.parser.service;
 
 import com.pr.parser.model.Product;
 import com.pr.parser.rest.ScrappingProperties;
+import com.pr.parser.validation.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,6 +24,8 @@ public class ScrappingService {
 
     private final ScrappingProperties scrappingProperties;
 
+    private final ProductValidator productValidator;
+
     public List<Product> parseHtmlForProducts(String html) {
         List<Product> products = new ArrayList<>();
         Document document = Jsoup.parse(html);
@@ -33,11 +36,13 @@ public class ScrappingService {
             var productPrice = productElement.select(".card-price_curr").text();
             var productLink = scrappingProperties.getBaseUrl() + productElement.select("a[itemprop=url]").attr("href");
 
-            var product = new Product();
-            product.setName(productName);
-            product.setPrice(productPrice);
-            product.setLink(productLink);
+            var product = Product.builder()
+                    .name(productName)
+                    .price(productPrice)
+                    .link(productLink)
+                    .build();
 
+            productValidator.validate(product);
             products.add(product);
         }
         return products;
