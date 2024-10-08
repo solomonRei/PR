@@ -3,6 +3,9 @@ package com.pr.parser.controller;
 import com.pr.parser.model.FilteredProductsResult;
 import com.pr.parser.model.Product;
 import com.pr.parser.service.ScrappingService;
+import com.pr.parser.utils.CustomDeserializer;
+import com.pr.parser.utils.CustomSerializer;
+import com.pr.parser.utils.PHPSerializer;
 import com.pr.parser.utils.SerializationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -24,11 +27,6 @@ public class ScrappingController {
 
     private final ScrappingService scrappingService;
 
-    @GetMapping("/parse")
-    public void handleRequest() {
-        scrappingService.scrapPage();
-    }
-
     @GetMapping("/")
     public Mono<List<Product>> getAllProducts() {
         return scrappingService.getAllProducts();
@@ -41,8 +39,17 @@ public class ScrappingController {
 
     @GetMapping(value = "/filter-custom")
     public ResponseEntity<String> getFilteredProductsCustomSerialization(@RequestParam String search,
-                                                      @RequestParam(name = "format", required = false, defaultValue = "json") String format) {
-        FilteredProductsResult result = scrappingService.getFilteredProducts(search).block();
+                                                      @RequestParam(name = "format", required = false, defaultValue = "json") String format) throws Exception {
+        var result = scrappingService.getFilteredProducts(search).block();
+
+        var serializedData = CustomSerializer.serialize(result);
+        System.out.println(serializedData);
+
+        var deserializedResult = CustomDeserializer.deserialize(serializedData);
+        System.out.println(deserializedResult);
+
+        var t = PHPSerializer.serializeObject(result);
+        System.out.println(t);
 
         if (result == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No products found.");

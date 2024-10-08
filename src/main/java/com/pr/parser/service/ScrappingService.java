@@ -60,7 +60,6 @@ public class ScrappingService {
     public Mono<Map<String, String>> scrapeAdditionalData(String productLink) {
         System.out.println("Scraping additional data for product: " + productLink);
         return webClientService.fetchHtmlContent(productLink)
-                .doOnNext(html -> System.out.println("Product HTML: " + html))
                 .map(html -> parseCharacteristics(Jsoup.parse(html)));
     }
 
@@ -111,19 +110,5 @@ public class ScrappingService {
                 .flatMapMany(this::parseHtmlForProducts)
                 .collectList()
                 .flatMap(products -> processProducts(products, params));
-    }
-
-    public void scrapPage() {
-//        webClientService.fetchHtmlContent("/ru/catalog/electronics/telephones/mobile/?page_=page_3")
-//                .flatMapMany(this::parseHtmlForProducts)
-//                .collectList()
-//                .flatMap(products -> processProducts(products, ">= 1000"))
-//                .subscribe(result -> {
-//                    System.out.println("Filtered Products: " + result.getFilteredProducts());
-//                    System.out.println("Total Sum: " + result.getTotalSum());
-//                    System.out.println("Timestamp: " + result.getTimestamp());
-//                }, error -> {
-//                    System.err.println("Error occurred: " + error.getMessage());
-//                });
     }
 }
