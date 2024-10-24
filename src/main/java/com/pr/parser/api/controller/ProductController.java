@@ -6,6 +6,7 @@ import com.pr.parser.mappers.ProductMapper;
 import com.pr.parser.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,5 +42,10 @@ public class ProductController {
     @PutMapping(value = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductDto updateProduct(@PathVariable Long productId, @RequestBody ProductRequest productRequest) {
         return productService.updateProduct(productId, productMapper.toModel(productRequest));
+    }
+
+    @DeleteMapping(value = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteProduct(@PathVariable Long productId) {
+        productService.deleteProduct(productId);
     }
 }

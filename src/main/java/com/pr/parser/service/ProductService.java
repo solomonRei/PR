@@ -5,6 +5,7 @@ import com.pr.parser.entity.ProductEntity;
 import com.pr.parser.mappers.ProductMapper;
 import com.pr.parser.model.ProductModel;
 import com.pr.parser.repository.ProductRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +27,13 @@ public class ProductService {
         return productMapper.toDto(productRepository.findAll());
     }
 
+    @Transactional
     public ProductDto saveProduct(ProductModel product) {
         appendCurrency(product, product.getCurrency());
         return productMapper.toDto(productRepository.save(productMapper.toEntity(product)));
     }
 
+    @Transactional
     public ProductDto updateProduct(Long productId, ProductModel product) {
         ProductEntity existingProduct = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
@@ -39,6 +42,14 @@ public class ProductService {
         productMapper.updateEntityFromModel(existingProduct, product);
 
         return productMapper.toDto(productRepository.save(existingProduct));
+    }
+
+    public void deleteProduct(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new RuntimeException("Product not found: " + productId);
+        }
+
+        productRepository.deleteById(productId);
     }
 
     private void appendCurrency(ProductModel product, String currencyCode) {
