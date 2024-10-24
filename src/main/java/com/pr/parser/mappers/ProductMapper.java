@@ -9,6 +9,8 @@ import com.pr.parser.model.ProductSpecificationModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring", uses = {CurrencyMapper.class})
 public interface ProductMapper {
 
@@ -17,6 +19,8 @@ public interface ProductMapper {
     @Mapping(target = "size", source = "productSpecification.size")
     @Mapping(target = "material", source = "productSpecification.material")
     ProductDto toDto(ProductEntity productEntity);
+
+    List<ProductDto> toDto(List<ProductEntity> productEntities);
 
     ProductModel toModel(ProductRequest productRequest);
     ProductSpecificationModel toProductSpecificationModel(ProductRequest.ProductSpecificationRequest productSpecification);
