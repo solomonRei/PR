@@ -38,8 +38,8 @@ public class ProductController {
         return productService.saveProduct(productMapper.toModel(productRequest));
     }
 
-    @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
-    public void updateProduct() {
-        // update product
+    @PutMapping(value = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProductDto updateProduct(@PathVariable Long productId, @RequestBody ProductRequest productRequest) {
+        return productService.updateProduct(productId, productMapper.toModel(productRequest));
     }
 }

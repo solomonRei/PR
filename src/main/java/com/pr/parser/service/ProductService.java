@@ -28,8 +28,17 @@ public class ProductService {
 
     public ProductDto saveProduct(ProductModel product) {
         appendCurrency(product, product.getCurrency());
-        ProductEntity productEntity = productMapper.toEntity(product);
-        return productMapper.toDto(productRepository.save(productEntity));
+        return productMapper.toDto(productRepository.save(productMapper.toEntity(product)));
+    }
+
+    public ProductDto updateProduct(Long productId, ProductModel product) {
+        ProductEntity existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found: " + productId));
+
+        appendCurrency(product, product.getCurrency());
+        productMapper.updateEntityFromModel(existingProduct, product);
+
+        return productMapper.toDto(productRepository.save(existingProduct));
     }
 
     private void appendCurrency(ProductModel product, String currencyCode) {

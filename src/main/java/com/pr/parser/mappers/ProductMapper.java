@@ -6,8 +6,11 @@ import com.pr.parser.entity.ProductEntity;
 import com.pr.parser.entity.ProductSpecificationEntity;
 import com.pr.parser.model.ProductModel;
 import com.pr.parser.model.ProductSpecificationModel;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
 
@@ -28,4 +31,9 @@ public interface ProductMapper {
     @Mapping(target = "currency", source = "currencyModel")
     ProductEntity toEntity(ProductModel product);
     ProductSpecificationEntity toProductSpecificationEntity(ProductModel productModel);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "currency", source = "currencyModel")
+    void updateEntityFromModel(@MappingTarget ProductEntity productEntity, ProductModel productModel);
 }
