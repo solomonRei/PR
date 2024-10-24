@@ -1,5 +1,6 @@
 package com.pr.parser.service;
 
+import com.pr.parser.api.dto.PagedResponse;
 import com.pr.parser.api.dto.ProductDto;
 import com.pr.parser.entity.ProductEntity;
 import com.pr.parser.mappers.ProductMapper;
@@ -7,6 +8,9 @@ import com.pr.parser.model.ProductModel;
 import com.pr.parser.repository.ProductRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,8 +27,18 @@ public class ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found: " + productId)));
     }
 
-    public List<ProductDto> getAllProducts() {
-        return productMapper.toDto(productRepository.findAll());
+    public PagedResponse<ProductDto> getAllProducts(int offset, int limit) {
+        Pageable pageable = PageRequest.of(offset, limit);
+        Page<ProductEntity> productPage = productRepository.findAll(pageable);
+        List<ProductDto> products = productMapper.toDto(productPage.getContent());
+
+        return new PagedResponse<>(
+                products,
+                productPage.getNumber(),
+                productPage.getTotalPages(),
+                productPage.getTotalElements(),
+                productPage.isLast()
+        );
     }
 
     @Transactional
