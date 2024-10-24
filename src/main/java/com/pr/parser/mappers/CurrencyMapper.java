@@ -18,5 +18,9 @@ public interface CurrencyMapper {
 
     CurrencyEntity toEntity(CurrencyModel currencyModel);
 
-    CurrencyDto toDto(CurrencyEntity currencyModel);
+    CurrencyDto toDto(CurrencyEntity currencyEntity);
+
+    List<CurrencyDto> toDto(List<CurrencyModel> currencyModel);
+
+    CurrencyDto toDto(CurrencyModel currencyModel);
 }
