@@ -1,4 +1,4 @@
-package com.pr.parser.controller;
+package com.pr.parser.api.controller;
 
 import com.pr.parser.model.FilteredProductsResult;
 import com.pr.parser.model.Product;
