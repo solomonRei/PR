@@ -1,8 +1,18 @@
 version: '3.8'
 services:
-  lab1-http-server:  # Name of your container
-    image: nicug/server-pr-lab1:latest  # The Docker image to use
-    ports:
-      - "8000:8000"  # Connect the port 8000 on your computer to port 8000 in the container
+  postgres-lab-2:
+    container_name: postgres-lab-2
+    image: postgres:16
     environment:
-      - PORT=8000  # Set environment variables
+      POSTGRES_DB: lab2
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    command: -p 5432
+    volumes:
+      - ./postgres-lab:/data/postgres
+    restart: always
