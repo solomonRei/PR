@@ -34,8 +34,8 @@ public class ProductController {
 
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PagedResponse<ProductDto>> getAllProducts(
-            @RequestParam(defaultValue = "0") int offset,
-            @RequestParam(defaultValue = "10") int limit
+            @RequestParam(value = "offset", defaultValue = "0") int offset,
+            @RequestParam(value = "limit", defaultValue = "10") int limit
     ) {
         PagedResponse<ProductDto> response = productService.getAllProducts(offset, limit);
         return ResponseEntity.ok(response);
