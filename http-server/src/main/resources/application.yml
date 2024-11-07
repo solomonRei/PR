@@ -16,7 +16,7 @@ scrapping:
   base-url: https://www.pandashop.md
 
 document:
-  file-storage-path: /tmp
+  file-storage-path: http-server/src/main/resources/storage
 
 logging:
   level:
