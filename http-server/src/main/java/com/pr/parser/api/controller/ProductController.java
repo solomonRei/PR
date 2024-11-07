@@ -3,7 +3,7 @@ package com.pr.parser.api.controller;
 import com.pr.parser.api.dto.PagedResponse;
 import com.pr.parser.api.dto.ProductDto;
 import com.pr.parser.api.dto.ProductRequest;
-import com.pr.parser.mappers.ProductMapper;
+import com.pr.parser.api.mappers.ProductMapper;
 import com.pr.parser.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -34,7 +36,7 @@ public class ProductController {
     @Operation(summary = "Get product by ID", description = "Retrieves a product by its unique ID")
     @GetMapping(value = "/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductDto getProduct(
-            @Parameter(description = "Product ID", required = true) @PathVariable Long productId) {
+            @Parameter(description = "Product ID", required = true) @PathVariable(name = "productId") Long productId) {
         return productService.getProduct(productId);
     }
 
@@ -49,10 +51,12 @@ public class ProductController {
     }
 
     @Operation(summary = "Create a new product", description = "Saves a new product to the database")
-    @PostMapping(value = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductDto saveProduct(
-            @Parameter(description = "Product data", required = true) @RequestBody ProductRequest productRequest) {
-        return productService.saveProduct(productMapper.toModel(productRequest));
+            @RequestPart("productRequest") ProductRequest productRequest,
+            @RequestPart("file") MultipartFile file
+    ) {
+        return productService.saveProduct(productMapper.toModel(productRequest), file);
     }
 
     @Operation(summary = "Update product by ID", description = "Updates an existing product by its ID")

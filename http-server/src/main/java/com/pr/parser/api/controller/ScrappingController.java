@@ -1,7 +1,7 @@
 package com.pr.parser.api.controller;
 
-import com.pr.parser.model.FilteredProductsResult;
-import com.pr.parser.model.Product;
+import com.pr.parser.domain.model.FilteredProductsResult;
+import com.pr.parser.domain.model.Product;
 import com.pr.parser.service.ScrappingService;
 import com.pr.parser.utils.CustomDeserializer;
 import com.pr.parser.utils.CustomSerializer;

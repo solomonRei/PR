@@ -1,7 +1,7 @@
 package com.pr.parser.api.controller;
 
 import com.pr.parser.api.dto.CurrencyDto;
-import com.pr.parser.mappers.CurrencyMapper;
+import com.pr.parser.api.mappers.CurrencyMapper;
 import com.pr.parser.service.CurrencyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

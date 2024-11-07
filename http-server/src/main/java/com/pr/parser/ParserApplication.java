@@ -1,6 +1,6 @@
 package com.pr.parser;
 
-import com.pr.parser.rest.ScrappingProperties;
+import com.pr.parser.config.ScrappingProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

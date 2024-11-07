@@ -1,7 +1,7 @@
 package com.pr.parser.utils;
 
-import com.pr.parser.model.FilteredProductsResult;
-import com.pr.parser.model.Product;
+import com.pr.parser.domain.model.FilteredProductsResult;
+import com.pr.parser.domain.model.Product;
 
 import java.math.BigDecimal;
 import java.time.Instant;

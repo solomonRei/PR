@@ -1,6 +1,6 @@
 package com.pr.parser.service;
 
-import com.pr.parser.rest.ScrappingProperties;
+import com.pr.parser.config.ScrappingProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;

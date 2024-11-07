@@ -15,6 +15,9 @@ spring:
 scrapping:
   base-url: https://www.pandashop.md
 
+document:
+  file-storage-path: /tmp
+
 logging:
   level:
     root: INFO

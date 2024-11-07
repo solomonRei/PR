@@ -1,11 +1,11 @@
 package com.pr.parser.service;
 
 import com.pr.parser.enums.Currency;
-import com.pr.parser.model.FilteredProductsResult;
-import com.pr.parser.model.Product;
-import com.pr.parser.specs.ProductSpecificationFactory;
+import com.pr.parser.domain.model.FilteredProductsResult;
+import com.pr.parser.domain.model.Product;
+import com.pr.parser.domain.specs.ProductSpecificationFactory;
 import com.pr.parser.utils.PriceConverterUtils;
-import com.pr.parser.validation.ProductValidator;
+import com.pr.parser.api.validation.ProductValidator;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

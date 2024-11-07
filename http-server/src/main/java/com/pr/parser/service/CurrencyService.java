@@ -1,8 +1,8 @@
 package com.pr.parser.service;
 
-import com.pr.parser.mappers.CurrencyMapper;
-import com.pr.parser.model.CurrencyModel;
-import com.pr.parser.repository.CurrencyRepository;
+import com.pr.parser.api.mappers.CurrencyMapper;
+import com.pr.parser.domain.model.CurrencyModel;
+import com.pr.parser.domain.repository.CurrencyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

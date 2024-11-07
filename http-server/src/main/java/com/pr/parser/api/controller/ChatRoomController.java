@@ -23,7 +23,7 @@ public class ChatRoomController {
     @Operation(summary = "Присоединиться к чат-комнате")
     @PostMapping("/join/{username}")
     public ResponseEntity<String> joinChatRoom(
-            @Parameter(description = "Имя пользователя") @PathVariable String username) {
+            @Parameter(description = "Имя пользователя") @PathVariable(name ="username") String username) {
         String joinMessage = username + " joined the chat room.";
         webSocketService.sendMessage(joinMessage);
         return ResponseEntity.ok(joinMessage);
@@ -32,7 +32,7 @@ public class ChatRoomController {
     @Operation(summary = "Покинуть чат-комнату")
     @PostMapping("/leave/{username}")
     public ResponseEntity<String> leaveChatRoom(
-            @Parameter(description = "Имя пользователя") @PathVariable String username) {
+            @Parameter(description = "Имя пользователя") @PathVariable(name ="username") String username) {
         String leaveMessage = username + " left the chat room.";
         webSocketService.sendMessage(leaveMessage);
         return ResponseEntity.ok(leaveMessage);
@@ -41,8 +41,8 @@ public class ChatRoomController {
     @Operation(summary = "Отправить сообщение в чат-комнату")
     @PostMapping("/send/{username}")
     public ResponseEntity<String> sendMessage(
-            @Parameter(description = "Имя пользователя") @PathVariable String username,
-            @Parameter(description = "Сообщение для отправки") @RequestParam String message) {
+            @Parameter(description = "Имя пользователя") @PathVariable(name ="username") String username,
+            @Parameter(description = "Сообщение для отправки") @RequestParam(name ="message") String message) {
 
         String userMessage = username + ": " + message;
         webSocketService.sendMessage(userMessage);
