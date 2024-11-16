@@ -18,7 +18,11 @@ scrapping:
 document:
   file-storage-path: http-server/src/main/resources/storage
 
+websocket:
+  base-url: ${WEB_SOCKET_URL:ws://localhost:8081}
+
 logging:
   level:
     root: INFO
-
+server:
+  port: 8089

@@ -1,20 +1,24 @@
 package com.pr.parser.service;
 
+import com.pr.parser.config.WebSocketProperties;
 import com.pr.parser.rest.CustomWebSocketClient;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 
 @Service
+@RequiredArgsConstructor
 public class WebSocketService {
 
     private CustomWebSocketClient webSocketClient;
+    private final WebSocketProperties webSocketProperties;
 
     @PostConstruct
     public void init() throws Exception {
-        webSocketClient = new CustomWebSocketClient(new URI("ws://localhost:8081/ws/chat"));
+        webSocketClient = new CustomWebSocketClient(new URI(webSocketProperties.getBaseUrl() + "/ws/chat"));
         webSocketClient.connect();
     }
 
