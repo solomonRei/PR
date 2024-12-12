@@ -53,10 +53,21 @@ public class ProductController {
     @Operation(summary = "Create a new product", description = "Saves a new product to the database")
     @PostMapping(value = "/save", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductDto saveProduct(
-            @RequestPart("productRequest") ProductRequest productRequest,
-            @RequestPart("file") MultipartFile file
+            @RequestPart("productRequest") ProductRequest productRequest
+//            @RequestPart("file") MultipartFile file
     ) {
-        return productService.saveProduct(productMapper.toModel(productRequest), file);
+        return productService.saveProduct(productMapper.toModel(productRequest));
+    }
+
+    @Operation(summary = "Upload the file", description = "Saves the file")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> uploadFile(@RequestPart("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+        productService.saveFile(file);
+
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "Update product by ID", description = "Updates an existing product by its ID")

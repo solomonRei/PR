@@ -47,11 +47,21 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDto saveProduct(ProductModel product, MultipartFile file) {
-        try {
+    public ProductDto saveProduct(ProductModel product) {
+//        try {
             appendCurrency(product, product.getCurrency());
-            fileService.saveFile(file);
+//            fileService.saveFile(file);
             return productMapper.toDto(productRepository.save(productMapper.toEntity(product)));
+//        } catch (IOException e) {
+//            log.error("Exception during upload", e);
+//            throw new RuntimeException("Failing to upload file");
+//        }
+    }
+
+    @Transactional
+    public void saveFile(MultipartFile file) {
+        try {
+            fileService.saveFile(file);
         } catch (IOException e) {
             log.error("Exception during upload", e);
             throw new RuntimeException("Failing to upload file");
