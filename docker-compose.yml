@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 services:
   postgres-lab-2:
     container_name: postgres-lab-2
@@ -15,20 +15,215 @@ services:
     volumes:
       - ./postgres-lab:/data/postgres
     restart: always
+    networks:
+      - rabbitmq-cluster
 
-  http-server:
-    image: smeloved/http-server:latest
+  postgres-email:
+    container_name: postgres-email
+    image: postgres:16
+    environment:
+      POSTGRES_DB: email-service
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-email:/data/postgres
+    expose:
+      - "5431"
     ports:
-      - "8080:8080"
+      - "5431:5431"
+    command: -p 5431
+    restart: always
+    networks:
+      - rabbitmq-cluster
+
+  http-server-1:
+    image: smeloved/http-server:latest
+    container_name: http-server-1
+    ports:
+      - "8081:8082"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-lab-2:5432/lab2
       - WEB_SOCKET_URL=ws://websocket-server:8081
+      - RAFT_NODE_ID=1
+      - RAFT_UDP_PORT=5001
+      - RAFT_CLIENT_NODES=http-server-1:5001,http-server-2:5002,http-server-3:5003
     depends_on:
       - postgres-lab-2
+    networks:
+      - rabbitmq-cluster
+
+  http-server-2:
+    image: smeloved/http-server:latest
+    container_name: http-server-2
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-lab-2:5432/lab2
+      - WEB_SOCKET_URL=ws://websocket-server:8081
+      - RAFT_NODE_ID=2
+      - RAFT_UDP_PORT=5002
+      - RAFT_CLIENT_NODES=http-server-1:5001,http-server-2:5002,http-server-3:5003
+    depends_on:
+      - postgres-lab-2
+    networks:
+      - rabbitmq-cluster
+
+  http-server-3:
+    image: smeloved/http-server:latest
+    container_name: http-server-3
+    ports:
+      - "8083:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-lab-2:5432/lab2
+      - WEB_SOCKET_URL=ws://websocket-server:8081
+      - RAFT_NODE_ID=3
+      - RAFT_UDP_PORT=5003
+      - RAFT_CLIENT_NODES=http-server-1:5001,http-server-2:5002,http-server-3:5003
+    depends_on:
+      - postgres-lab-2
+    networks:
+      - rabbitmq-cluster
+
+  proxy-server:
+    image: smeloved/pr3-proxy:latest
+    container_name: proxy-server
+    ports:
+      - "9090:9090"
+    networks:
+      - rabbitmq-cluster
+    volumes:
+      - ./ftp_data:/app/resources
+
+  scrapper:
+    image: smeloved/pr3-scrapper:latest
+    container_name: scrapper
+    ports:
+      - "9091:9091"
+    networks:
+      - rabbitmq-cluster
+
+  email-service:
+    image: smeloved/pr3-email-service:latest
+    container_name: email-service
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres-email:5431/email-service
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - EMAIL_USERNAME=gmail
+      - EMAIL_PASSWORD=test
+    networks:
+      - rabbitmq-cluster
+
+  event-service:
+    image: smeloved/pr3-event-service:latest
+    container_name: event-service
+    ports:
+      - "9096:9096"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://postgres-email:5431/email-service
+      - DATABASE_USERNAME=postgres
+      - DATABASE_PASSWORD=postgres
+      - EMAIL_SERVICE_HOST=email-service
+      - EMAIL_SERVICE_PORT=8080
+    networks:
+      - rabbitmq-cluster
 
   websocket-server:
     image: smeloved/websocket-server:latest
     ports:
-      - "8081:8081"
+      - "8084:8081"
     depends_on:
       - postgres-lab-2
+    networks:
+      - rabbitmq-cluster
+
+  rabbitmq1:
+    image: rabbitmq:3-management
+    hostname: rabbitmq1
+    container_name: rabbitmq1
+    networks:
+      - rabbitmq-cluster
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secretcookie'
+      RABBITMQ_NODENAME: 'rabbit@rabbitmq1'
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: '-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"'
+      RABBITMQ_PROMETHEUS_RETURNS_PER_OBJECT_METRICS: "true"
+    volumes:
+      - rabbitmq1-data:/var/lib/rabbitmq
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+    command: >
+      sh -c "rabbitmq-server &
+      sleep 10 &&
+      rabbitmqctl set_policy ha-all '^.*$' '{\"ha-mode\":\"all\",\"ha-sync-mode\":\"automatic\"}' --apply-to queues &&
+      tail -f /dev/null"
+
+  rabbitmq2:
+    image: rabbitmq:3-management
+    hostname: rabbitmq2
+    container_name: rabbitmq2
+    ports:
+      - "15673:15672"
+      - "5673:5672"
+    networks:
+      - rabbitmq-cluster
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secretcookie'
+      RABBITMQ_NODENAME: 'rabbit@rabbitmq2'
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: '-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"'
+      RABBITMQ_PROMETHEUS_RETURNS_PER_OBJECT_METRICS: "true"
+    volumes:
+      - rabbitmq2-data:/var/lib/rabbitmq
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+
+  rabbitmq3:
+    image: rabbitmq:3-management
+    hostname: rabbitmq3
+    container_name: rabbitmq3
+    ports:
+      - "15674:15672"
+      - "5674:5672"
+    networks:
+      - rabbitmq-cluster
+    environment:
+      RABBITMQ_ERLANG_COOKIE: 'secretcookie'
+      RABBITMQ_NODENAME: 'rabbit@rabbitmq3'
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: '-rabbitmq_management load_definitions "/etc/rabbitmq/definitions.json"'
+      RABBITMQ_PROMETHEUS_RETURNS_PER_OBJECT_METRICS: "true"
+    volumes:
+      - rabbitmq3-data:/var/lib/rabbitmq
+      - ./definitions.json:/etc/rabbitmq/definitions.json
+      - ./rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
+      - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
+
+  ftp_server:
+    image: delfer/alpine-ftp-server
+    container_name: ftp_server
+    ports:
+      - "21:21" # FTP Command Port
+      - "21000-21010:21000-21010" # Passive Mode Ports
+    environment:
+      - USERS=testuser|testpass
+      - ADDRESS=ftp_server
+    volumes:
+      - ./ftp_data:/home/testuser
+    networks:
+      - rabbitmq-cluster
+
+networks:
+  rabbitmq-cluster:
+    external: true
+
+volumes:
+  rabbitmq1-data:
+  rabbitmq2-data:
+  rabbitmq3-data:
