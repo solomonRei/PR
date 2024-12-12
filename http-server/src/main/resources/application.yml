@@ -23,6 +23,11 @@ websocket:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
 server:
-  port: 8089
+  port: 8082
+
+raft:
+  node-id: ${RAFT_NODE_ID:1}
+  cluster-nodes: ${RAFT_CLIENT_NODES:127.0.0.1:5001,127.0.0.1:5002,127.0.0.1:5003}
+  udp-port: ${RAFT_UDP_PORT:5001}
